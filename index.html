@@ -87,6 +87,22 @@
 </main>
 <script>
 'use strict';
+const mqttClient = mqtt.connect(
+    "wss://xd1d016d.ala.asia-southeast1.emqxsl.com:8084/mqtt",
+    {
+        username: "web-ac",
+        password: "tikitikidih",
+        clientId: "web-ac-" + Math.random().toString(16).slice(2)
+    }
+);
+
+mqttClient.on("connect", () => {
+    console.log("MQTT CONNECTED");
+});
+
+mqttClient.on("error", (error) => {
+    console.error("MQTT ERROR:", error);
+});
 const $ = id => document.getElementById(id);
 const defaults = {power:false,temperature:26,mode:'cool',fan:'auto',
   swingVertical:'off',swingHorizontal:'middle',turbo:false,quiet:false,
