@@ -361,7 +361,7 @@ const features=[
 ];
 features.forEach(([group,key,label,route,note])=>{
   const el=document.createElement('div');el.className='feature';
-  el.innerHTML=`<div class="row"><span>${label}</span><!-- Route: POST ${route}; body value=on|off --><button data-control data-toggle="${key}" aria-label="${label}">Off</button></div><p class="note">${note}</p>`;
+  el.innerHTML=`<div class="row"><span>${label}</span><button data-control data-toggle="${key}" aria-label="${label}">Off</button></div><p class="note">${note}</p>`;
   const button=el.querySelector('button');
   if(key in capabilities){button.dataset.custom=key;const info=document.createElement('p');info.className='note';info.dataset.support=key;el.append(info);}
   button.addEventListener('click',()=>{
@@ -375,7 +375,7 @@ features.forEach(([group,key,label,route,note])=>{
 });
 for(const type of ['on','off']){
   const el=document.createElement('div');el.className='timer';
-  el.innerHTML=`<strong>${type.toUpperCase()} timer</strong><p id="${type}Current" class="note"></p><div class="timer-inputs"><label>Hours<input id="${type}Hours" type="number" inputmode="numeric" min="0" max="23" step="1" value="0" required data-control></label><label>Minutes<input id="${type}Minutes" type="number" inputmode="numeric" min="0" max="59" step="1" value="0" required data-control></label></div><div class="buttons"><!-- Route: POST /api/timer/${type}; body minutes=0..1439 --><button id="${type}Set" data-control>Set / Confirm</button><!-- Route: POST /api/timer/cancel; body type=${type} --><button id="${type}Cancel" data-control>Cancel timer</button></div>`;
+  el.innerHTML=`<strong>${type.toUpperCase()} timer</strong><p id="${type}Current" class="note"></p><div class="timer-inputs"><label>Hours<input id="${type}Hours" type="number" inputmode="numeric" min="0" max="23" step="1" value="0" required data-control></label><label>Minutes<input id="${type}Minutes" type="number" inputmode="numeric" min="0" max="59" step="1" value="0" required data-control></label></div><div class="buttons"><button id="${type}Set" data-control>Set / Confirm</button><button id="${type}Cancel" data-control>Cancel timer</button></div>`;
   $('timers').append(el);
   $(type+'Set').addEventListener('click',()=>{
     const h=$(type+'Hours'),m=$(type+'Minutes');
@@ -387,14 +387,14 @@ for(const type of ['on','off']){
   });
   $(type+'Cancel').addEventListener('click',()=>sendCommand('/api/timer/cancel',{type},{[type+'Timer']:null}));
 }
-/* <!-- Route: POST /api/power; body value=on|off --> */
+// Route: POST /api/power; body value=on|off
 $('powerButton').onclick=()=>sendCommand('/api/power',{value:state.power?'off':'on'},{power:!state.power});
 // Local draft only: typing never sends a request.
 $('temperature').oninput=()=>{
   temperatureDirty=true;
   $('temperature').setCustomValidity('');
 };
-/* <!-- Route: POST /api/temperature; body value=16..30; Enter or Apply --> */
+// Route: POST /api/temperature; body value=16..30; Enter or Apply
 $('temperatureForm').onsubmit=event=>{
   event.preventDefault();
   if(pending||state.locked||state.mode==='fan') return;
@@ -407,34 +407,34 @@ $('temperatureForm').onsubmit=event=>{
   }
   sendCommand('/api/temperature',{value},{temperature:value});
 };
-/* <!-- Route: POST /api/temperature; body value=16..30 --> */
+// Route: POST /api/temperature; body value=16..30
 for(const [id,delta] of [['minus',-1],['plus',1]]) $(id).onclick=()=>{
   const value=state.temperature+delta;
   if(state.mode!=='fan'&&value>=16&&value<=30) sendCommand('/api/temperature',{value},{temperature:value});
 };
-/* <!-- Routes: POST /api/swing/vertical, POST /api/swing/horizontal, POST /api/health-airflow; body value=selected option --> */
+// Routes: POST /api/swing/vertical, POST /api/swing/horizontal, POST /api/health-airflow; body value=selected option
 for(const [key,route] of [['swingVertical','/api/swing/vertical'],['swingHorizontal','/api/swing/horizontal'],['healthAirflow','/api/health-airflow']]) $(key).onchange=event=>{
   const value=event.target.value;render();
   if(key==='healthAirflow'&&!capabilities.healthAirflow) return;
   sendCommand(route,{value},{[key]:value});
 };
-/* <!-- Route: POST /api/timer/cancel; body type=all --> */
+// Route: POST /api/timer/cancel; body type=all
 $('cancelTimers').onclick=()=>sendCommand('/api/timer/cancel',{type:'all'},{onTimer:null,offTimer:null});
-/* <!-- Route: POST /api/lock; body value=on|off --> */
+// Route: POST /api/lock; body value=on|off
 $('lockButton').onclick=()=>sendCommand('/api/lock',{value:state.locked?'off':'on'},{locked:!state.locked});
-/* <!-- Route: POST /api/self-clean; body action=start --> */
+// Route: POST /api/self-clean; body action=start
 $('cleanButton').onclick=()=>{
   if(capabilities.selfClean&&confirm('Start Self Clean? Cooling may pause during the cycle.')) sendCommand('/api/self-clean',{action:'start'},{selfClean:true});
 };
-/* <!-- Route: POST /api/light; body action=toggle --> */
+// Route: POST /api/light; body action=toggle
 $('lightButton').onclick=()=>{
   if(capabilities.light) sendCommand('/api/light',{action:'toggle'},{light:state.light===null?null:!state.light});
 };
-/* <!-- Route: POST /api/reset; no parameters --> */
+// Route: POST /api/reset; no parameters
 $('resetButton').onclick=()=>{
   if(confirm('Reset to power off, Cool, 26°C, Auto fan and default airflow? Features and timers will be cleared.')) sendCommand('/api/reset',{},defaults);
 };
-/* <!-- Route: GET /api/state --> */
+// Route: GET /api/state
 $('refresh').onclick=()=>requestState();
 // Local navigation: both views share the same state and API routes.
 const sidebar=$('sidebar');
