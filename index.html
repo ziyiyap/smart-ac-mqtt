@@ -98,6 +98,46 @@ const mqttClient = mqtt.connect(
 
 mqttClient.on("connect", () => {
     console.log("MQTT CONNECTED");
+    $('connection').textContent = 'Connected';
+    message('Connected to AC controller','success');
+
+    mqttClient.subscribe("ac/status/state", {qos:1}, (error) => {
+        if (error) {
+            console.error("MQTT SUBSCRIBE ERROR:", error);
+            message(`Subscribe error · ${error.message}`,'error');
+        } else {
+            console.log("Subscribed to ac/status/state");
+        }
+    });
+});
+
+mqttClient.on("message", (topic, payload) => {
+    if (topic !== "ac/status/state") return;
+
+    try {
+        const data = JSON.parse(payload.toString());
+        state = ingest(data, state, true);
+        pending = false;
+        $('connection').textContent = 'Connected';
+        $('syncNote').textContent = 'Live state from ESP32 via MQTT.';
+        message('State updated','success');
+        render();
+    } catch (error) {
+        console.error("INVALID STATE MESSAGE:", error, payload.toString());
+        message(`Invalid state message · ${error.message}`,'error');
+    }
+});
+
+mqttClient.on("reconnect", () => {
+    $('connection').textContent = 'Reconnecting…';
+});
+
+mqttClient.on("offline", () => {
+    $('connection').textContent = 'Offline';
+});
+
+mqttClient.on("close", () => {
+    $('connection').textContent = 'Disconnected';
 });
 
 mqttClient.on("error", (error) => {
@@ -111,7 +151,7 @@ const defaults = {power:false,temperature:26,mode:'cool',fan:'auto',
 let state = {...defaults,roomTemperature:null,humidity:null};
 // Set a capability true ONLY after implementing and testing its custom route.
 let capabilities = {eco:false,selfClean:false,iFeel:false,healthAirflow:false,light:true};
-let pending = false, pollTimer = null, sensorReceived = 0;
+let pending = false, sensorReceived = 0;
 let temperatureDirty = false; // Preserve an unsubmitted edit during state polling.
 const choices = {
   mode:['auto','cool','dry','fan','heat'],fan:['auto','low','medium','high'],
@@ -201,62 +241,102 @@ function render(){
   $('cleanButton').disabled ||= state.selfClean;
   $('cleanStatus').textContent=state.selfClean?'Running · awaiting update.':'Inactive.';
 }
-function schedulePoll(){clearTimeout(pollTimer);pollTimer=setTimeout(()=>loadState(false),15000);}
-// Commands are never retried automatically: a timeout may occur AFTER IR was sent.
-async function request(route,parameters={},method='POST'){
-  const controller=new AbortController(), timeout=setTimeout(()=>controller.abort(),8000);
-  try{
-    const response=await fetch(route,{method,cache:'no-store',redirect:'error',signal:controller.signal,
-      headers:{'Accept':'application/json',...(method==='POST'?{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}:{})},
-      ...(method==='POST'?{body:new URLSearchParams(parameters).toString()}:{})});
-    if(response.status!==200) throw Error(`HTTP ${response.status}`);
-    const text=await response.text();
-    if(!text.trim()){if(method==='GET') throw Error('Empty state response');return null;}
-    if(!(response.headers.get('content-type')||'').includes('application/json')) throw Error('Expected JSON response');
-    const data=JSON.parse(text);
-    if(!data||typeof data!=='object'||Array.isArray(data)) throw Error('Invalid JSON response');
-    if(data.ok===false) throw Error(data.error||'Command rejected');
-    return data;
-  }finally{clearTimeout(timeout);}
+function topicForRoute(route, parameters={}){
+  const map = {
+    '/api/power': 'ac/command/power',
+    '/api/temperature': 'ac/command/temperature',
+    '/api/mode': 'ac/command/mode',
+    '/api/fan': 'ac/command/fan',
+    '/api/swing/vertical': 'ac/command/swing/vertical',
+    '/api/swing/horizontal': 'ac/command/swing/horizontal',
+    '/api/turbo': 'ac/command/turbo',
+    '/api/quiet': 'ac/command/quiet',
+    '/api/eco': 'ac/command/eco',
+    '/api/sleep': 'ac/command/sleep',
+    '/api/health': 'ac/command/health',
+    '/api/ifeel': 'ac/command/ifeel',
+    '/api/health-airflow': 'ac/command/health-airflow',
+    '/api/self-clean': 'ac/command/self-clean',
+    '/api/light': 'ac/command/light',
+    '/api/reset': 'ac/command/reset'
+  };
+
+  if(route === '/api/timer/on') return 'ac/command/timer/on';
+  if(route === '/api/timer/off') return 'ac/command/timer/off';
+  if(route === '/api/timer/cancel') return 'ac/command/timer/cancel';
+  if(route === '/api/lock') return null; // browser-only UI lock
+  return map[route] || null;
 }
-async function sendCommand(route,parameters,patch){
-  if(pending||(state.locked&&route!=='/api/lock')) return;
-  pending=true;clearTimeout(pollTimer);render();message('Sending…');
-  try{
-    const data=await request(route,parameters);
-    const proposed=normalize(patch,state);
-    state=data?ingest(data,proposed):proposed;
-    if(route==='/api/temperature'||route==='/api/reset'){
-      temperatureDirty=false; $('temperature').setCustomValidity('');
+
+function payloadForRoute(route, parameters={}){
+  if(route === '/api/timer/on' || route === '/api/timer/off')
+    return String(parameters.minutes);
+  if(route === '/api/timer/cancel')
+    return String(parameters.type);
+  if(route === '/api/light')
+    return 'toggle';
+  if(route === '/api/self-clean')
+    return String(parameters.action || 'start');
+  if(route === '/api/reset')
+    return 'reset';
+  return String(parameters.value ?? '');
+}
+
+function sendCommand(route, parameters, patch){
+  if(pending || (state.locked && route !== '/api/lock')) return;
+
+  // Lock is only a dashboard UI lock; it does not need the ESP32.
+  if(route === '/api/lock'){
+    state = normalize(patch, state);
+    render();
+    message(state.locked ? 'Controls locked' : 'Controls unlocked', 'success');
+    return;
+  }
+
+  if(!mqttClient.connected){
+    $('connection').textContent='Disconnected';
+    message('MQTT is not connected.','error');
+    return;
+  }
+
+  const topic = topicForRoute(route, parameters);
+  if(!topic){
+    message(`No MQTT topic configured for ${route}.`,'error');
+    return;
+  }
+
+  pending=true;
+  render();
+  message('Sending…');
+
+  mqttClient.publish(topic, payloadForRoute(route, parameters), {qos:1}, error=>{
+    pending=false;
+    if(error){
+      $('connection').textContent='Command error';
+      message(`MQTT error · ${error.message}`,'error');
+    }else{
+      // Optimistic UI update. The ESP32's ac/status/state message will correct it.
+      state=normalize(patch,state);
+      if(route==='/api/temperature'||route==='/api/reset'){
+        temperatureDirty=false;
+        $('temperature').setCustomValidity('');
+      }
+      message('Command sent','success');
     }
-    $('connection').textContent='Connected';
-    message('Success','success');
-    schedulePoll();
-  }catch(error){
-    $('connection').textContent='Command error';
-    message(`Error · ${error.name==='AbortError'?'Request timed out':error.message}. Refresh before retrying.`, 'error');
-  }finally{pending=false;render();}
+    render();
+  });
 }
-/* <!-- Route: GET /api/state --> */
-async function loadState(manual=true){
-  clearTimeout(pollTimer);
-  if(pending){schedulePoll();return;}
-  pending=true;render();if(manual) message('Synchronizing…');
-  try{
-    const data=await request('/api/state',{},'GET');
-    const source=data.state||data;
-    if(!Object.keys(defaults).some(k=>k in source)) throw Error('Missing AC state fields');
-    state=ingest(data,state,true);
-    $('connection').textContent='Connected';
-    $('syncNote').textContent='Synced · every 15 seconds. Last sent settings, not AC feedback.';
-    if(manual) message('Success','success');schedulePoll();
-  }catch(error){
-    $('connection').textContent='Sync unavailable';
-    $('syncNote').textContent='Sync unavailable · showing last known or default settings. Tap Refresh.';
-    sensorReceived=0;
-    if(manual) message(`State unavailable · ${error.message}`,'error');
-  }finally{pending=false;render();}
+
+function requestState(){
+  // The ESP32 should publish ac/status/state after commands.
+  // If you later add ac/command/state on the ESP32, this Refresh button can request it.
+  if(!mqttClient.connected){
+    message('MQTT is not connected.','error');
+    return;
+  }
+  message('Waiting for ESP32 state…');
 }
+
 function buildChoices(id,key,route,values){
   values.forEach(([value,label])=>{
     const button=document.createElement('button');button.textContent=label;
@@ -355,7 +435,7 @@ $('resetButton').onclick=()=>{
   if(confirm('Reset to power off, Cool, 26°C, Auto fan and default airflow? Features and timers will be cleared.')) sendCommand('/api/reset',{},defaults);
 };
 /* <!-- Route: GET /api/state --> */
-$('refresh').onclick=()=>loadState(true);
+$('refresh').onclick=()=>requestState();
 // Local navigation: both views share the same state and API routes.
 const sidebar=$('sidebar');
 $('openSidebar').onclick=()=>{sidebar.showModal();$('openSidebar').setAttribute('aria-expanded','true');};
@@ -373,7 +453,7 @@ function showPage(focus=false){
 }
 document.querySelectorAll('[data-page]').forEach(link=>link.addEventListener('click',()=>{sidebar.close();setTimeout(()=>showPage(true),0);}));
 window.addEventListener('hashchange',()=>showPage(true));
-showPage();render();loadState(true);
+showPage();render();
 </script>
 </body>
 </html>
