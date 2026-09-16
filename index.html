@@ -327,14 +327,15 @@ function sendCommand(route, parameters, patch){
   });
 }
 
-function requestState(){
-  // The ESP32 should publish ac/status/state after commands.
-  // If you later add ac/command/state on the ESP32, this Refresh button can request it.
-  if(!mqttClient.connected){
-    message('MQTT is not connected.','error');
-    return;
-  }
-  message('Waiting for ESP32 state…');
+function requestState() {
+    if (!mqttClient.connected) {
+        message('MQTT is not connected.', 'error');
+        return;
+    }
+
+    message('Synchronizing…');
+
+    mqttClient.publish("ac/command/state", "get", { qos: 1 });
 }
 
 function buildChoices(id,key,route,values){
