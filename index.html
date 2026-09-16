@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#09111f">
+<title>Haier · Dashboard</title>
+<style>
+:root{color-scheme:dark;--bg:#080c13;--card:#121923;--line:#29323f;--accent:#203e70;--text:#f3f5f9;--muted:#a6b0bf;--blue:#abcaff;--good:#a4dfbc;--bad:#ffb2b2}
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1160px;margin:auto;padding:0 32px 64px;padding-bottom:max(64px,env(safe-area-inset-bottom))}.topbar,.row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.topbar{min-height:88px;border-bottom:1px solid var(--line);margin-bottom:34px}.brand{display:flex;align-items:center;gap:14px;font-weight:600;letter-spacing:-.02em}.brand span{font-weight:400;color:var(--muted)}h1{font-size:clamp(2rem,4vw,3rem);line-height:1.15;font-weight:600;letter-spacing:-.045em;margin:0 0 12px}h2{font-size:1.15rem;letter-spacing:-.025em;font-weight:600;margin:0 0 18px}h3{font-size:1.05rem;letter-spacing:-.02em;margin:0 0 20px;font-weight:600}p{margin:8px 0}.note,.sub{color:var(--muted);font-size:.875rem}.eyebrow{color:var(--muted);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px}.badge{border:1px solid var(--line);border-radius:30px;padding:6px 12px;font-size:.8rem;color:var(--muted)}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:28px 0 20px}.metric,.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:24px}.metric{min-height:190px;display:flex;flex-direction:column;justify-content:space-between}.metric.active{background:linear-gradient(140deg,#203d6d,#162641);border-color:#496c9c}.metric label{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:.875rem}.metric strong{display:block;font-size:clamp(2rem,4vw,3rem);letter-spacing:-.055em;line-height:1.15;margin:20px 0 10px;font-weight:500;font-variant-numeric:tabular-nums}.metric small{color:var(--muted);font-size:.8rem}svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}.other-status{border:1px solid var(--line);border-radius:20px;background:#0e141e;padding:0 20px;margin:20px 0}.other-status summary{cursor:pointer;padding:18px 0;min-height:58px;font-size:.95rem}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:0 0 20px}.chip{font-size:.875rem;border:1px solid var(--line);padding:12px;border-radius:12px;color:var(--muted)}.chip.on{background:#192c49;color:var(--text);border-color:#3a5579}.dashboard-tools{margin-top:24px}.dashboard-tools .row{padding:16px 0}.dashboard-tools .row+.row{border-top:1px solid var(--line)}.controls{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start;margin-top:28px}.buttons{display:flex;flex-wrap:wrap;gap:8px}button,select,input{font:inherit;color:var(--text);background:#19222f;border:1px solid #3b485b;border-radius:12px;min-height:46px;padding:10px 14px;max-width:100%}button{cursor:pointer;touch-action:manipulation;transition:background .15s,border-color .15s}button:hover:not(:disabled){background:#243247;border-color:#7994ba}button[aria-pressed=true],button.primary{background:var(--accent);border-color:#6485b7}button:disabled,select:disabled,input:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--blue);outline-offset:4px}.icon-button{display:grid;place-items:center;width:46px;padding:10px;background:transparent}.temperature{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0}.temperature input{font-size:1.5rem;width:84px;text-align:center;padding:8px}.temperature #minus,.temperature #plus{font-size:1.5rem}.temperature-unit{color:var(--muted)}.field{display:grid;gap:8px;margin:18px 0 8px}.feature{border-top:1px solid var(--line);padding:18px 0}.feature:first-of-type{border-top:0;padding-top:0}.feature:last-child{padding-bottom:0}.feature p{margin:8px 0 0}.feature button{min-width:76px}.timer{margin:18px 0;padding-top:18px;border-top:1px solid var(--line)}.timer-inputs{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap}.timer-inputs label{display:grid;gap:5px;font-size:.875rem}.timer input{width:95px}.danger{color:var(--bad)}#message{min-height:24px;font-size:.875rem;color:var(--muted);margin:0 0 12px}#message[data-kind=error]{color:var(--bad)}#message[data-kind=success]{color:var(--good)}#settingsLockNotice{color:var(--muted);font-size:.875rem}#settingsLockNotice a{color:var(--blue)}dialog.sidebar{margin:0;padding:28px 20px;width:min(310px,86vw);height:100dvh;max-height:none;max-width:none;background:#101722;color:var(--text);border:0;border-right:1px solid var(--line);box-shadow:20px 0 80px #0006}dialog::backdrop{background:#0008;backdrop-filter:blur(5px)}.sidebar nav{display:grid;gap:8px;margin-top:40px}.sidebar a{display:flex;align-items:center;gap:12px;color:var(--muted);text-decoration:none;border:1px solid transparent;border-radius:14px;padding:15px 14px;min-height:50px}.sidebar a[aria-current=page]{background:#1d3559;border-color:#35537b;color:var(--text)}.sidebar a:hover{background:#202d40;color:var(--text)}.sidebar-footer{margin-top:40px;font-size:.8rem;color:var(--muted)}@media(max-width:700px){main{padding:0 16px 40px}.topbar{min-height:76px;margin-bottom:26px}.brand span{display:none}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}.metric{padding:18px;min-height:155px}.metric strong{font-size:2.25rem;margin:14px 0 8px}.metric label{font-size:.8rem;gap:6px}.controls{grid-template-columns:1fr}.panel{padding:22px}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.badge{max-width:48%;font-size:.75rem}.topbar .brand{gap:8px}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<!-- Local navigation only. No backend requests. -->
+<dialog id="sidebar" class="sidebar" aria-label="Navigation">
+<div class="row"><strong>Haier</strong><button id="closeSidebar" class="icon-button" aria-label="Close sidebar"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+<nav aria-label="Pages"><a href="#dashboard" data-page="dashboard"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a><a href="#settings" data-page="settings"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></svg>Controls &amp; Settings</a></nav>
+<p class="sidebar-footer">HS-10VPA03</p></dialog>
+<main>
+<header class="topbar"><div class="brand"><button id="openSidebar" class="icon-button" aria-label="Open sidebar" aria-controls="sidebar" aria-expanded="false"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>Haier <span> / Climate</span></div><span id="connection" class="badge" role="status">Connecting…</span></header>
+<p id="message" role="status" aria-live="polite">Connecting…</p>
+<section id="dashboardPage" aria-labelledby="dashboardTitle">
+<p class="eyebrow">Your room</p><h1 id="dashboardTitle" tabindex="-1">Dashboard</h1>
+<section class="metrics" aria-label="Room overview">
+<article class="metric" id="powerCard"><label><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3v9M6 5a9 9 0 1 0 12 0"/></svg>Power</label><strong id="powerValue">OFF</strong><small>Power status</small></article>
+<article class="metric"><label><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Target temperature</label><strong id="targetValue">26°C</strong><small id="targetNote">Set temperature</small></article>
+<article class="metric"><label><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M9 14V5a3 3 0 0 1 6 0v9a5 5 0 1 1-6 0ZM12 8v9"/></svg>Room temperature</label><strong id="roomValue">—</strong><small class="sensorNote">No reading</small></article>
+<article class="metric"><label><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3S5 11 5 15a7 7 0 0 0 14 0c0-4-7-12-7-12Z"/></svg>Humidity</label><strong id="humidityValue">—</strong><small class="sensorNote">No reading</small></article>
+</section>
+<!-- Local disclosure only. No backend request. -->
+<details class="other-status"><summary>Other status</summary><div id="statusSummary" class="summary" aria-label="All AC settings"></div></details>
+<section class="dashboard-tools" aria-label="Connection and lock">
+<div class="row"><div><strong>Sync</strong><p id="syncNote" class="note">Waiting for current settings.</p></div>
+<!-- Route: GET /api/state -->
+<button id="refresh">↻ Refresh state</button></div>
+<div class="row"><span id="lockNote" class="note">Controls unlocked</span>
+<!-- Route: POST /api/lock; body value=on|off -->
+<button id="lockButton">Lock controls</button></div></section></section>
+<section id="settingsPage" aria-labelledby="settingsTitle" hidden>
+<p class="eyebrow">Make it comfortable</p><h1 id="settingsTitle" tabindex="-1">Controls &amp; Settings</h1>
+<p id="settingsLockNotice" hidden>Controls are locked. <a href="#dashboard">Unlock on Dashboard</a></p>
+<div class="controls">
+<section class="panel"><h3>Power & target temperature</h3><div class="row">
+<!-- Route: POST /api/power; body value=on|off -->
+<button id="powerButton" class="primary" data-control>Turn on</button>
+<form id="temperatureForm" class="temperature" novalidate>
+<!-- Route: POST /api/temperature; body value=16..30 -->
+<button id="minus" type="button" aria-label="Decrease target temperature" data-control>−</button>
+<!-- Route: POST /api/temperature; submitted only with Enter or Apply -->
+<input id="temperature" type="number" inputmode="numeric" enterkeyhint="done" min="16" max="30" step="1" value="26" required aria-label="Target temperature in Celsius" aria-describedby="temperatureHelp" data-control><span class="temperature-unit">°C</span>
+<!-- Route: POST /api/temperature; body value=16..30 -->
+<button id="plus" type="button" aria-label="Increase target temperature" data-control>+</button>
+<!-- Route: POST /api/temperature; body value=16..30 -->
+<button id="applyTemperature" type="submit" data-control>Apply</button></form></div><p id="temperatureHelp" class="note">16–30°C · Enter or Apply to confirm. Unavailable in Fan mode.</p></section>
+<section class="panel"><h3>Operating mode</h3>
+<!-- Route: POST /api/mode; body value=auto|cool|dry|fan|heat -->
+<div id="modes" class="buttons" aria-label="Operating mode"></div><p class="note">Heat requires a heating-capable unit.</p></section>
+<section class="panel"><h3>Fan speed</h3>
+<!-- Route: POST /api/fan; body value=auto|low|medium|high -->
+<div id="fans" class="buttons" aria-label="Fan speed"></div><p class="note">Auto, Dry, Quiet and Sleep may adjust fan speed.</p></section>
+<section class="panel"><h3>Airflow direction</h3>
+<!-- Route: POST /api/swing/vertical; body value=off|top|middle|down|auto -->
+<label class="field">Vertical airflow<select id="swingVertical" data-control><option value="off">Fixed / off</option><option value="top">Top</option><option value="middle">Middle</option><option value="down">Down</option><option value="auto">Auto swing</option></select></label><p class="note">Up/down · horizontal flap.</p>
+<!-- Route: POST /api/swing/horizontal; body value=left-max|left|middle|right|right-max|auto -->
+<label class="field">Horizontal airflow<select id="swingHorizontal" data-control><option value="left-max">Far left</option><option value="left">Left</option><option value="middle">Centre</option><option value="right">Right</option><option value="right-max">Far right</option><option value="auto">Auto swing</option></select></label><p class="note">Left/right · vertical vanes.</p></section>
+<section class="panel"><h3>Comfort & energy</h3><div id="comfort"></div></section>
+<section class="panel"><h3>Health & sensing</h3><div id="healthFeatures"></div>
+<!-- Route: POST /api/health-airflow; body value=off|avoid-direct|up|down -->
+<label class="field">Health Airflow<select id="healthAirflow" data-control data-custom="healthAirflow"><option value="off">Off</option><option value="avoid-direct">Avoid direct airflow</option><option value="up">Upward airflow</option><option value="down">Downward airflow</option></select></label><p class="note">Directed airflow, separate from swing.</p><p class="note" data-support="healthAirflow"></p></section>
+<section class="panel"><h3>Timers</h3><p class="note">Delay in hours and minutes. Model support may vary.</p><div id="timers"></div>
+<!-- Route: POST /api/timer/cancel; body type=all -->
+<button id="cancelTimers" data-control>Cancel both timers</button></section>
+<section class="panel"><h3>Maintenance & controller</h3>
+<div class="feature"><div class="row"><span>Self Clean / Smart Clean</span>
+<!-- Route: POST /api/self-clean; body action=start -->
+<button id="cleanButton" data-control data-custom="selfClean">Start Self Clean</button></div><p class="note">Cooling may pause during cleaning. <span id="cleanStatus">Not requested.</span></p><p class="note" data-support="selfClean"></p></div>
+<div class="feature"><div class="row"><span>Indoor-unit display light</span>
+<!-- Route: POST /api/light; body action=toggle -->
+<button id="lightButton" data-control data-custom="light">Toggle light</button></div><p class="note">Wall-unit display.</p><p class="note" data-support="light"></p></div>
+
+<div class="feature">
+<!-- Route: POST /api/reset; no parameters -->
+<button id="resetButton" class="danger" data-control>Reset Controller State</button><p class="note">Restore controller defaults. Not a factory reset.</p></div></section>
+</div>
+</section>
+</main>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const defaults = {power:false,temperature:26,mode:'cool',fan:'auto',
+  swingVertical:'off',swingHorizontal:'middle',turbo:false,quiet:false,
+  eco:false,sleep:false,health:false,iFeel:false,healthAirflow:'off',
+  selfClean:false,light:null,locked:false,onTimer:null,offTimer:null};
+let state = {...defaults,roomTemperature:null,humidity:null};
+// Set a capability true ONLY after implementing and testing its custom route.
+let capabilities = {eco:false,selfClean:false,iFeel:false,healthAirflow:false,light:true};
+let pending = false, pollTimer = null, sensorReceived = 0;
+let temperatureDirty = false; // Preserve an unsubmitted edit during state polling.
+const choices = {
+  mode:['auto','cool','dry','fan','heat'],fan:['auto','low','medium','high'],
+  swingVertical:['off','top','middle','down','auto'],
+  swingHorizontal:['left-max','left','middle','right','right-max','auto'],
+  healthAirflow:['off','avoid-direct','up','down']
+};
+const title = value => String(value).replace(/-/g,' ').replace(/^./,c=>c.toUpperCase());
+const onOff = value => value === null ? 'Unknown' : value ? 'On' : 'Off';
+const duration = value => value == null || value === 0 ? 'Off' : `${Math.floor(value/60)}h ${value%60}m`;
+function message(text, kind=''){ $('message').textContent=text; $('message').dataset.kind=kind; }
+function normalize(source, base){
+  if (!source || typeof source!=='object' || Array.isArray(source)) throw Error('Invalid state JSON');
+  const next={...base};
+  for(const key of Object.keys(defaults)){
+    if(!(key in source)) continue;
+    const value=source[key];
+    if(choices[key]){if(choices[key].includes(value)) next[key]=value;}
+    else if(key==='temperature'){if(Number.isInteger(value)&&value>=16&&value<=30) next[key]=value;}
+    else if(key==='onTimer'||key==='offTimer'){
+      if(value===null||value===0) next[key]=null;
+      else if(Number.isInteger(value)&&value>0&&value<=1439) next[key]=value;
+    }else if(typeof value==='boolean'||(key==='light'&&value===null)) next[key]=value;
+  }
+  if(!['cool','heat'].includes(next.mode)) next.turbo=next.quiet=false;
+  if(next.turbo) next.quiet=false;
+  return next;
+}
+function ingest(data, base, full=false){
+  const source=data.state || data;
+  const next=normalize(source,base);
+  const hasSensors=full||'roomTemperature' in source||'humidity' in source;
+  if(hasSensors){
+    next.roomTemperature=Number.isFinite(source.roomTemperature)?source.roomTemperature:null;
+    next.humidity=Number.isFinite(source.humidity)&&source.humidity>=0&&source.humidity<=100?source.humidity:null;
+    sensorReceived=Date.now();
+  }
+  const caps=data.capabilities || source.capabilities;
+  if(caps && typeof caps==='object'){
+    for(const key of Object.keys(capabilities)) if(typeof caps[key]==='boolean') capabilities[key]=caps[key];
+  }
+  return next;
+}
+function render(){
+  $('powerValue').textContent=state.power?'ON':'OFF';
+  $('powerCard').classList.toggle('active',state.power);
+  $('targetValue').textContent=`${state.temperature}°C`;
+  if(!temperatureDirty) $('temperature').value=String(state.temperature);
+  $('targetNote').textContent=state.mode==='fan'?'Ignored in Fan mode':'Set temperature';
+  $('roomValue').textContent=state.roomTemperature===null?'—':`${state.roomTemperature.toFixed(1)}°C`;
+  $('humidityValue').textContent=state.humidity===null?'—':`${state.humidity.toFixed(0)}%`;
+  document.querySelectorAll('.sensorNote').forEach((el,i)=>{
+    const available=i===0?state.roomTemperature!==null:state.humidity!==null;
+    el.textContent=!available?'No reading':Date.now()-sensorReceived>45000?'Last reading · stale':'Latest reading';
+  });
+  const summary=[['Mode',title(state.mode)],['Fan',title(state.fan)],
+    ['Vertical',title(state.swingVertical)],['Horizontal',state.swingHorizontal==='middle'?'Centre':title(state.swingHorizontal)],
+    ...['turbo','quiet','eco','sleep','health','iFeel'].map(k=>[({iFeel:'I FEEL',eco:'ECO'})[k]||title(k),onOff(state[k]),state[k]]),
+    ['Health Airflow',title(state.healthAirflow)],['ON timer',duration(state.onTimer)],['OFF timer',duration(state.offTimer)],
+    ['Clean',state.selfClean?'Running':'Off',state.selfClean],['Display light',onOff(state.light)],['Lock',onOff(state.locked)]];
+  $('statusSummary').replaceChildren(...summary.map(([label,value,active])=>{
+    const el=document.createElement('span');el.className='chip'+(active?' on':'');el.textContent=`${label}: ${value}`;return el;
+  }));
+  document.querySelectorAll('[data-control]').forEach(el=>{
+    el.disabled=pending||state.locked||Boolean(el.dataset.custom&&!capabilities[el.dataset.custom]);
+  });
+  $('refresh').disabled=pending;
+  $('lockButton').disabled=pending;
+  $('lockButton').textContent=state.locked?'Unlock controls':'Lock controls';
+  $('lockButton').setAttribute('aria-pressed',String(state.locked));
+  $('settingsLockNotice').hidden=!state.locked;
+  $('lockNote').textContent=state.locked?'Controls locked':'Controls unlocked';
+  $('powerButton').textContent=state.power?'Turn off':'Turn on';
+  $('powerButton').setAttribute('aria-pressed',String(state.power));
+  $('minus').disabled ||= state.mode==='fan'||state.temperature<=16;
+  $('plus').disabled ||= state.mode==='fan'||state.temperature>=30;
+  $('temperature').disabled ||= state.mode==='fan';
+  $('applyTemperature').disabled ||= state.mode==='fan';
+  for(const key of ['swingVertical','swingHorizontal','healthAirflow']) $(key).value=state[key];
+  document.querySelectorAll('[data-choice]').forEach(el=>el.setAttribute('aria-pressed',String(state[el.dataset.key]===el.dataset.choice)));
+  document.querySelectorAll('[data-toggle]').forEach(el=>{
+    const key=el.dataset.toggle;el.textContent=onOff(state[key]);el.setAttribute('aria-pressed',String(state[key]));
+    if(key==='turbo'||key==='quiet') el.disabled ||= !['cool','heat'].includes(state.mode);
+  });
+  document.querySelectorAll('[data-support]').forEach(el=>el.textContent=capabilities[el.dataset.support]?'Available':'Not configured');
+  for(const type of ['on','off']) $(`${type}Current`).textContent=`Configured: ${duration(state[type+'Timer'])}`;
+  $('cleanButton').disabled ||= state.selfClean;
+  $('cleanStatus').textContent=state.selfClean?'Running · awaiting update.':'Inactive.';
+}
+function schedulePoll(){clearTimeout(pollTimer);pollTimer=setTimeout(()=>loadState(false),15000);}
+// Commands are never retried automatically: a timeout may occur AFTER IR was sent.
+async function request(route,parameters={},method='POST'){
+  const controller=new AbortController(), timeout=setTimeout(()=>controller.abort(),8000);
+  try{
+    const response=await fetch(route,{method,cache:'no-store',redirect:'error',signal:controller.signal,
+      headers:{'Accept':'application/json',...(method==='POST'?{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}:{})},
+      ...(method==='POST'?{body:new URLSearchParams(parameters).toString()}:{})});
+    if(response.status!==200) throw Error(`HTTP ${response.status}`);
+    const text=await response.text();
+    if(!text.trim()){if(method==='GET') throw Error('Empty state response');return null;}
+    if(!(response.headers.get('content-type')||'').includes('application/json')) throw Error('Expected JSON response');
+    const data=JSON.parse(text);
+    if(!data||typeof data!=='object'||Array.isArray(data)) throw Error('Invalid JSON response');
+    if(data.ok===false) throw Error(data.error||'Command rejected');
+    return data;
+  }finally{clearTimeout(timeout);}
+}
+async function sendCommand(route,parameters,patch){
+  if(pending||(state.locked&&route!=='/api/lock')) return;
+  pending=true;clearTimeout(pollTimer);render();message('Sending…');
+  try{
+    const data=await request(route,parameters);
+    const proposed=normalize(patch,state);
+    state=data?ingest(data,proposed):proposed;
+    if(route==='/api/temperature'||route==='/api/reset'){
+      temperatureDirty=false; $('temperature').setCustomValidity('');
+    }
+    $('connection').textContent='Connected';
+    message('Success','success');
+    schedulePoll();
+  }catch(error){
+    $('connection').textContent='Command error';
+    message(`Error · ${error.name==='AbortError'?'Request timed out':error.message}. Refresh before retrying.`, 'error');
+  }finally{pending=false;render();}
+}
+/* <!-- Route: GET /api/state --> */
+async function loadState(manual=true){
+  clearTimeout(pollTimer);
+  if(pending){schedulePoll();return;}
+  pending=true;render();if(manual) message('Synchronizing…');
+  try{
+    const data=await request('/api/state',{},'GET');
+    const source=data.state||data;
+    if(!Object.keys(defaults).some(k=>k in source)) throw Error('Missing AC state fields');
+    state=ingest(data,state,true);
+    $('connection').textContent='Connected';
+    $('syncNote').textContent='Synced · every 15 seconds. Last sent settings, not AC feedback.';
+    if(manual) message('Success','success');schedulePoll();
+  }catch(error){
+    $('connection').textContent='Sync unavailable';
+    $('syncNote').textContent='Sync unavailable · showing last known or default settings. Tap Refresh.';
+    sensorReceived=0;
+    if(manual) message(`State unavailable · ${error.message}`,'error');
+  }finally{pending=false;render();}
+}
+function buildChoices(id,key,route,values){
+  values.forEach(([value,label])=>{
+    const button=document.createElement('button');button.textContent=label;
+    button.dataset.control='';button.dataset.key=key;button.dataset.choice=value;
+    $(id).append(document.createComment(`Route: POST ${route}; body value=${value}`),button);
+    button.addEventListener('click',()=>{
+      const patch={[key]:value};
+      if(key==='mode'&&!['cool','heat'].includes(value)) Object.assign(patch,{turbo:false,quiet:false});
+      sendCommand(route,{value},patch);
+    });
+  });
+}
+buildChoices('modes','mode','/api/mode',[['auto','↻ Auto'],['cool','❄ Cool'],['dry','♧ Dry'],['fan','≋ Fan'],['heat','☀ Heat']]);
+buildChoices('fans','fan','/api/fan',choices.fan.map(v=>[v,title(v)]));
+const features=[
+  ['comfort','turbo','Turbo','/api/turbo','Fast cooling or heating.'],
+  ['comfort','quiet','Quiet','/api/quiet','Low-noise operation. Replaces Turbo.'],
+  ['comfort','eco','ECO','/api/eco','Lower output. Less energy.'],
+  ['comfort','sleep','Sleep','/api/sleep','Overnight comfort programme.'],
+  ['healthFeatures','health','Health','/api/health','Health/filter function, where supported.'],
+  ['healthFeatures','iFeel','I FEEL','/api/ifeel','Uses the remote’s temperature sensor.']
+];
+features.forEach(([group,key,label,route,note])=>{
+  const el=document.createElement('div');el.className='feature';
+  el.innerHTML=`<div class="row"><span>${label}</span><!-- Route: POST ${route}; body value=on|off --><button data-control data-toggle="${key}" aria-label="${label}">Off</button></div><p class="note">${note}</p>`;
+  const button=el.querySelector('button');
+  if(key in capabilities){button.dataset.custom=key;const info=document.createElement('p');info.className='note';info.dataset.support=key;el.append(info);}
+  button.addEventListener('click',()=>{
+    if(key in capabilities&&!capabilities[key]) return;
+    const enabled=!state[key],patch={[key]:enabled};
+    if(enabled&&key==='turbo') patch.quiet=false;
+    if(enabled&&key==='quiet') patch.turbo=false;
+    sendCommand(route,{value:enabled?'on':'off'},patch);
+  });
+  $(group).append(el);
+});
+for(const type of ['on','off']){
+  const el=document.createElement('div');el.className='timer';
+  el.innerHTML=`<strong>${type.toUpperCase()} timer</strong><p id="${type}Current" class="note"></p><div class="timer-inputs"><label>Hours<input id="${type}Hours" type="number" inputmode="numeric" min="0" max="23" step="1" value="0" required data-control></label><label>Minutes<input id="${type}Minutes" type="number" inputmode="numeric" min="0" max="59" step="1" value="0" required data-control></label></div><div class="buttons"><!-- Route: POST /api/timer/${type}; body minutes=0..1439 --><button id="${type}Set" data-control>Set / Confirm</button><!-- Route: POST /api/timer/cancel; body type=${type} --><button id="${type}Cancel" data-control>Cancel timer</button></div>`;
+  $('timers').append(el);
+  $(type+'Set').addEventListener('click',()=>{
+    const h=$(type+'Hours'),m=$(type+'Minutes');
+    if(!h.reportValidity()||!m.reportValidity()) return;
+    const hours=Number(h.value),minutes=Number(m.value);
+    if(!Number.isInteger(hours)||!Number.isInteger(minutes)) return message('Use whole hours and minutes.','error');
+    const total=hours*60+minutes;
+    sendCommand('/api/timer/'+type,{minutes:total},{[type+'Timer']:total||null});
+  });
+  $(type+'Cancel').addEventListener('click',()=>sendCommand('/api/timer/cancel',{type},{[type+'Timer']:null}));
+}
+/* <!-- Route: POST /api/power; body value=on|off --> */
+$('powerButton').onclick=()=>sendCommand('/api/power',{value:state.power?'off':'on'},{power:!state.power});
+// Local draft only: typing never sends a request.
+$('temperature').oninput=()=>{
+  temperatureDirty=true;
+  $('temperature').setCustomValidity('');
+};
+/* <!-- Route: POST /api/temperature; body value=16..30; Enter or Apply --> */
+$('temperatureForm').onsubmit=event=>{
+  event.preventDefault();
+  if(pending||state.locked||state.mode==='fan') return;
+  const input=$('temperature'), value=Number(input.value);
+  input.setCustomValidity('');
+  if(!input.value.trim()||!Number.isInteger(value)||value<16||value>30){
+    input.setCustomValidity('Enter a whole number between 16 and 30°C.');
+    input.reportValidity();
+    return;
+  }
+  sendCommand('/api/temperature',{value},{temperature:value});
+};
+/* <!-- Route: POST /api/temperature; body value=16..30 --> */
+for(const [id,delta] of [['minus',-1],['plus',1]]) $(id).onclick=()=>{
+  const value=state.temperature+delta;
+  if(state.mode!=='fan'&&value>=16&&value<=30) sendCommand('/api/temperature',{value},{temperature:value});
+};
+/* <!-- Routes: POST /api/swing/vertical, POST /api/swing/horizontal, POST /api/health-airflow; body value=selected option --> */
+for(const [key,route] of [['swingVertical','/api/swing/vertical'],['swingHorizontal','/api/swing/horizontal'],['healthAirflow','/api/health-airflow']]) $(key).onchange=event=>{
+  const value=event.target.value;render();
+  if(key==='healthAirflow'&&!capabilities.healthAirflow) return;
+  sendCommand(route,{value},{[key]:value});
+};
+/* <!-- Route: POST /api/timer/cancel; body type=all --> */
+$('cancelTimers').onclick=()=>sendCommand('/api/timer/cancel',{type:'all'},{onTimer:null,offTimer:null});
+/* <!-- Route: POST /api/lock; body value=on|off --> */
+$('lockButton').onclick=()=>sendCommand('/api/lock',{value:state.locked?'off':'on'},{locked:!state.locked});
+/* <!-- Route: POST /api/self-clean; body action=start --> */
+$('cleanButton').onclick=()=>{
+  if(capabilities.selfClean&&confirm('Start Self Clean? Cooling may pause during the cycle.')) sendCommand('/api/self-clean',{action:'start'},{selfClean:true});
+};
+/* <!-- Route: POST /api/light; body action=toggle --> */
+$('lightButton').onclick=()=>{
+  if(capabilities.light) sendCommand('/api/light',{action:'toggle'},{light:state.light===null?null:!state.light});
+};
+/* <!-- Route: POST /api/reset; no parameters --> */
+$('resetButton').onclick=()=>{
+  if(confirm('Reset to power off, Cool, 26°C, Auto fan and default airflow? Features and timers will be cleared.')) sendCommand('/api/reset',{},defaults);
+};
+/* <!-- Route: GET /api/state --> */
+$('refresh').onclick=()=>loadState(true);
+// Local navigation: both views share the same state and API routes.
+const sidebar=$('sidebar');
+$('openSidebar').onclick=()=>{sidebar.showModal();$('openSidebar').setAttribute('aria-expanded','true');};
+$('closeSidebar').onclick=()=>sidebar.close();
+sidebar.addEventListener('close',()=>$('openSidebar').setAttribute('aria-expanded','false'));
+sidebar.addEventListener('click',event=>{if(event.target===sidebar){const r=sidebar.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom) sidebar.close();}});
+function showPage(focus=false){
+  const settings=location.hash==='#settings';
+  $('dashboardPage').hidden=settings;$('settingsPage').hidden=!settings;
+  document.querySelectorAll('[data-page]').forEach(link=>{
+    if(link.dataset.page===(settings?'settings':'dashboard')) link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+  });
+  document.title='Haier · '+(settings?'Controls & Settings':'Dashboard');
+  if(focus){window.scrollTo(0,0);$(settings?'settingsTitle':'dashboardTitle').focus({preventScroll:true});}
+}
+document.querySelectorAll('[data-page]').forEach(link=>link.addEventListener('click',()=>{sidebar.close();setTimeout(()=>showPage(true),0);}));
+window.addEventListener('hashchange',()=>showPage(true));
+showPage();render();loadState(true);
+</script>
+</body>
+</html>
